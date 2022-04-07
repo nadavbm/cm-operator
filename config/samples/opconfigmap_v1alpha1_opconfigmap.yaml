@@ -1,0 +1,6 @@
+apiVersion: opconfigmap.example.com/v1alpha1
+kind: OpConfigMap
+metadata:
+  name: opconfigmap-sample
+spec:
+  # TODO(user): Add fields here

@@ -1,0 +1,24 @@
+# permissions for end users to edit opconfigmaps.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: opconfigmap-editor-role
+rules:
+- apiGroups:
+  - opconfigmap.example.com
+  resources:
+  - opconfigmaps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - opconfigmap.example.com
+  resources:
+  - opconfigmaps/status
+  verbs:
+  - get
