@@ -28,8 +28,12 @@ type OpConfigMapSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of OpConfigMap. Edit opconfigmap_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// ConfigMapName is the configMap name
+	ConfigMapName string `json:"cmname,omitempty"`
+	// FileName is the file name in configmap data
+	FileName string `json:"filename,omitempty"`
+	// FileData is the data of the file
+	FileData string `json:"filedata,omitempty"`
 }
 
 // OpConfigMapStatus defines the observed state of OpConfigMap

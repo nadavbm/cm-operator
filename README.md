@@ -29,3 +29,18 @@ create initial api resource
 ```
 operator-sdk create api --group opconfigmap --version v1alpha1 --kind OpConfigMap --resource --controller
 ```
+
+run:
+```
+make generate
+```
+to generate crd bases:
+```
+make manifests
+```
+it will create the crd under bases
+
+upload container to docker hub:
+```
+
+```
