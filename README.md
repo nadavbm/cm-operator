@@ -42,5 +42,5 @@ it will create the crd under bases
 
 upload container to docker hub:
 ```
-
+make docker-build docker-push IMG="nadavbm/cm-operator:v0.0.1"
 ```
