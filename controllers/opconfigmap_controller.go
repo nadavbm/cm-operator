@@ -18,13 +18,18 @@ package controllers
 
 import (
 	"context"
+	"time"
 
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	"github.com/nadavbm/cm-operator/api/v1alpha1"
 	opconfigmapv1alpha1 "github.com/nadavbm/cm-operator/api/v1alpha1"
+	"github.com/nadavbm/cm-operator/cmoperator/kuber"
 )
 
 // OpConfigMapReconciler reconciles a OpConfigMap object
@@ -49,7 +54,17 @@ type OpConfigMapReconciler struct {
 func (r *OpConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	opcm := &v1alpha1.OpConfigMap{}
+	if err := r.Client.Get(context.Background(), req.NamespacedName, opcm); err != nil {
+		if errors.IsNotFound(err) {
+			return ctrl.Result{Requeue: false, RequeueAfter: 0}, nil
+		}
+		return ctrl.Result{Requeue: true, RequeueAfter: time.Minute}, err
+	}
+
+	if _, err := createConfigMapIfNeeded(req.Namespace, opcm.Spec); err != nil {
+		return ctrl.Result{Requeue: true, RequeueAfter: time.Minute}, err
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -59,4 +74,17 @@ func (r *OpConfigMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&opconfigmapv1alpha1.OpConfigMap{}).
 		Complete(r)
+}
+
+func createConfigMapIfNeeded(ns string, cmspec v1alpha1.OpConfigMapSpec) (*v1.ConfigMap, error) {
+	k, err := kuber.New()
+	if err != nil {
+		return nil, err
+	}
+
+	cm, err := k.ApplyConfigMap(ns, cmspec)
+	if err != nil {
+		return nil, err
+	}
+	return cm, nil
 }
