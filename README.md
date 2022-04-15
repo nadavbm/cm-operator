@@ -21,26 +21,32 @@ export GO111MODULE=on
 ```
 
 to create this operator:
+
 ```
 operator-sdk init --domain example.com --repo github.com/nadavbm/cm-operator
 ```
 
 create initial api resource
+
 ```
 operator-sdk create api --group opconfigmap --version v1alpha1 --kind OpConfigMap --resource --controller
 ```
 
 run:
+
 ```
 make generate
 ```
+
 to generate crd bases:
+
 ```
 make manifests
 ```
 it will create the crd under bases
 
 upload container to docker hub:
+
 ```
 make docker-build docker-push IMG="nadavbm/cm-operator:v0.0.1"
 ```
