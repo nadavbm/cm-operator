@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cmop-test
+  labels:
+    name: cmop-test
+---
+apiVersion: opconfigmap.example.com/v1alpha1
+kind: OpConfigMap
+metadata:
+  name: cmop-test
+  namespace: cmop-test
+spec:
+  cmname: cmop-config
+  filedata: '{"some": "json"}'
+  filename: cmop.json
