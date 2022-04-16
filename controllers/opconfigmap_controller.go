@@ -30,10 +30,12 @@ import (
 	"github.com/nadavbm/cm-operator/api/v1alpha1"
 	opconfigmapv1alpha1 "github.com/nadavbm/cm-operator/api/v1alpha1"
 	"github.com/nadavbm/cm-operator/cmoperator/kuber"
+	"github.com/nadavbm/zlog"
 )
 
 // OpConfigMapReconciler reconciles a OpConfigMap object
 type OpConfigMapReconciler struct {
+	logger zlog.Logger
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -62,7 +64,7 @@ func (r *OpConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{Requeue: true, RequeueAfter: time.Minute}, err
 	}
 
-	if _, err := createConfigMapIfNeeded(req.Namespace, opcm.Spec); err != nil {
+	if _, err := createConfigMapIfNeeded(r.logger, req.Namespace, opcm.Spec); err != nil {
 		return ctrl.Result{Requeue: true, RequeueAfter: time.Minute}, err
 	}
 
@@ -76,8 +78,8 @@ func (r *OpConfigMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func createConfigMapIfNeeded(ns string, cmspec v1alpha1.OpConfigMapSpec) (*v1.ConfigMap, error) {
-	k, err := kuber.New()
+func createConfigMapIfNeeded(logger zlog.Logger, ns string, cmspec v1alpha1.OpConfigMapSpec) (*v1.ConfigMap, error) {
+	k, err := kuber.New(logger)
 	if err != nil {
 		return nil, err
 	}

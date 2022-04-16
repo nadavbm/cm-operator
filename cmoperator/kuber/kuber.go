@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/nadavbm/cm-operator/api/v1alpha1"
+	"github.com/nadavbm/zlog"
+	"go.uber.org/zap"
 
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -13,11 +15,12 @@ import (
 )
 
 type Kuber struct {
+	logger zlog.Logger
 	client kubernetes.Clientset
 }
 
 // New will create a new instance of kuber
-func New() (*Kuber, error) {
+func New(logger zlog.Logger) (*Kuber, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
@@ -29,6 +32,7 @@ func New() (*Kuber, error) {
 	}
 
 	return &Kuber{
+		logger: logger,
 		client: *k8sClient,
 	}, nil
 }
@@ -40,6 +44,7 @@ func (k *Kuber) ApplyConfigMap(ns string, cmspec v1alpha1.OpConfigMapSpec) (*v1.
 
 	cm, err := cmInterface.Create(context.TODO(), cm, metav1.CreateOptions{})
 	if err == nil {
+		k.logger.Info("configMap created", zap.String("namespace:", ns), zap.Any("configMap:", cm))
 		return cm, nil
 	} else if err != nil && !errors.IsAlreadyExists(err) {
 		return nil, err
@@ -56,6 +61,7 @@ func (k *Kuber) ApplyConfigMap(ns string, cmspec v1alpha1.OpConfigMapSpec) (*v1.
 		return nil, err
 	}
 
+	k.logger.Info("configMap updated", zap.String("namespace:", ns), zap.Any("configMap:", cm))
 	return cm, nil
 }
 
