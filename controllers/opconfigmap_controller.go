@@ -35,7 +35,7 @@ import (
 
 // OpConfigMapReconciler reconciles a OpConfigMap object
 type OpConfigMapReconciler struct {
-	logger zlog.Logger
+	Logger *zlog.Logger
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -64,7 +64,7 @@ func (r *OpConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{Requeue: true, RequeueAfter: time.Minute}, err
 	}
 
-	if _, err := createConfigMapIfNeeded(r.logger, req.Namespace, opcm.Spec); err != nil {
+	if _, err := createConfigMapIfNeeded(r.Logger, req.Namespace, opcm.Spec); err != nil {
 		return ctrl.Result{Requeue: true, RequeueAfter: time.Minute}, err
 	}
 
@@ -78,7 +78,7 @@ func (r *OpConfigMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func createConfigMapIfNeeded(logger zlog.Logger, ns string, cmspec v1alpha1.OpConfigMapSpec) (*v1.ConfigMap, error) {
+func createConfigMapIfNeeded(logger *zlog.Logger, ns string, cmspec v1alpha1.OpConfigMapSpec) (*v1.ConfigMap, error) {
 	k, err := kuber.New(logger)
 	if err != nil {
 		return nil, err

@@ -33,6 +33,7 @@ import (
 
 	opconfigmapv1alpha1 "github.com/nadavbm/cm-operator/api/v1alpha1"
 	"github.com/nadavbm/cm-operator/controllers"
+	"github.com/nadavbm/zlog"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -64,6 +65,7 @@ func main() {
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+	logger := zlog.InitLogger()
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
@@ -79,6 +81,7 @@ func main() {
 	}
 
 	if err = (&controllers.OpConfigMapReconciler{
+		Logger: logger,
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {

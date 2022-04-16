@@ -15,12 +15,12 @@ import (
 )
 
 type Kuber struct {
-	logger zlog.Logger
+	logger *zlog.Logger
 	client kubernetes.Clientset
 }
 
 // New will create a new instance of kuber
-func New(logger zlog.Logger) (*Kuber, error) {
+func New(logger *zlog.Logger) (*Kuber, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
