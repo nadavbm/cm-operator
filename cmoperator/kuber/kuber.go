@@ -73,7 +73,7 @@ func buildConfigMap(ns string, cmspec v1alpha1.OpConfigMapSpec) *v1.ConfigMap {
 			APIVersion: "batch/v1/beta1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "cmop",
+			Name:      cmspec.ConfigMapName,
 			Namespace: ns,
 		},
 		Data: map[string]string{
