@@ -54,7 +54,7 @@ type OpConfigMapReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.11.0/pkg/reconcile
 func (r *OpConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	r.Logger.Info("v1alpha1.PgDeployer changed. Start reconcile", zap.String("namespace", req.NamespacedName.Namespace))
+	r.Logger.Info("something changed. Start reconcile", zap.String("namespace", req.NamespacedName.Namespace))
 
 	var opcm v1alpha1.OpConfigMap
 	if err := r.Client.Get(context.Background(), req.NamespacedName, &opcm); err != nil {
@@ -62,7 +62,7 @@ func (r *OpConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 			r.Logger.Info("cmop not found, probably deleted. skipping..", zap.String("namespace", req.Namespace))
 			return ctrl.Result{Requeue: false, RequeueAfter: 0}, nil
 		}
-		r.Logger.Error("could not fetch resource, check if crd applied in the cluster..")
+		r.Logger.Error("could not fetch resource")
 		return ctrl.Result{Requeue: true, RequeueAfter: time.Minute}, err
 	}
 
