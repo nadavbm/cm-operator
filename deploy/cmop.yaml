@@ -46,7 +46,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.8.0
-  creationTimestamp: null
   name: opconfigmaps.opconfigmap.example.com
 spec:
   group: opconfigmap.example.com
@@ -120,7 +119,14 @@ spec:
       serviceAccountName: cm-operator
       containers:
       - name: cm-operator
-        image: nadavbm/cm-operator:v0.0.5
+        image: nadavbm/cm-operator:v0.0.7
         command:
           - /cm-operator
         imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
