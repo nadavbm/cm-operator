@@ -119,7 +119,7 @@ spec:
       serviceAccountName: cm-operator
       containers:
       - name: cm-operator
-        image: nadavbm/cm-operator:v0.0.7
+        image: nadavbm/cm-operator:v0.0.8
         command:
           - /cm-operator
         imagePullPolicy: Always

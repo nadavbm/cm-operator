@@ -19,6 +19,7 @@ package main
 import (
 	"flag"
 	"os"
+	"time"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -34,7 +35,10 @@ import (
 	opconfigmapv1alpha1 "github.com/nadavbm/cm-operator/api/v1alpha1"
 	"github.com/nadavbm/cm-operator/controllers"
 	"github.com/nadavbm/zlog"
+
 	//+kubebuilder:scaffold:imports
+
+	zaplog "go.uber.org/zap"
 )
 
 var (
@@ -67,6 +71,7 @@ func main() {
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 	logger := zlog.InitLogger()
 
+	d := time.Duration(15) * time.Second
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
 		MetricsBindAddress:     metricsAddr,
@@ -74,9 +79,10 @@ func main() {
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
 		LeaderElectionID:       "69e3d0db.example.com",
+		SyncPeriod:             &d,
 	})
 	if err != nil {
-		setupLog.Error(err, "unable to start manager")
+		logger.Error("unable to start manager", zaplog.Error(err))
 		os.Exit(1)
 	}
 
@@ -85,23 +91,23 @@ func main() {
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "OpConfigMap")
+		logger.Error("unable to create controller", zaplog.Error(err))
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
-		setupLog.Error(err, "unable to set up health check")
+		logger.Error("unable to set up health check", zaplog.Error(err))
 		os.Exit(1)
 	}
 	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
-		setupLog.Error(err, "unable to set up ready check")
+		logger.Error("unable to set up ready check", zaplog.Error(err))
 		os.Exit(1)
 	}
 
-	setupLog.Info("starting manager")
+	logger.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
-		setupLog.Error(err, "problem running manager")
+		logger.Error("problem running manager", zaplog.Error(err))
 		os.Exit(1)
 	}
 }
